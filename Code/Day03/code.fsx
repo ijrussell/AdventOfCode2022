@@ -1,9 +1,7 @@
 open System.IO
 
-let priorityData = ['a'..'z'] @ ['A'..'Z']
-
 let getPriority (input:char) =
-    priorityData 
+    ['a'..'z'] @ ['A'..'Z'] 
     |> List.findIndex (fun c -> c = input)
     |> (+) 1
 
@@ -21,11 +19,7 @@ module Part1 =
 
     let calculate (lines:string[]) =
         lines
-        |> Seq.map (fun line ->
-            line 
-            |> Seq.splitInto 2
-            |> handleIntersect
-        )
+        |> Seq.map (Seq.splitInto 2 >> handleIntersect)
         |> Seq.sumBy (fun v -> Set.maxElement v)
 
     let result = rucksacks |> calculate
@@ -35,10 +29,7 @@ module Part2 =
     let calculate (lines:string[]) =
         lines
         |> Seq.chunkBySize 3
-        |> Seq.map (fun chunk ->
-            chunk
-            |> handleIntersect
-        )
+        |> Seq.map handleIntersect
         |> Seq.sumBy (fun v -> Set.maxElement v)
 
     let result = rucksacks |> calculate
