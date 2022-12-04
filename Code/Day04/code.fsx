@@ -14,18 +14,18 @@ let createSets (input:string) =
     | [|first;second|] -> convertToSet first, convertToSet second
     | _ -> failwith "Invalid input"
     
+let calculate f (lines:string[]) =
+    lines
+    |> Seq.choose (createSets >> f)
+    |> Seq.length
+
 module Part1 =
 
     let isSubSet (assignments:Set<int> * Set<int>) =
         if Set.isSubset (fst assignments) (snd assignments) || Set.isSubset (snd assignments) (fst assignments) then Some ()
         else None
 
-    let calculate (lines:string[]) =
-        lines
-        |> Seq.choose (createSets >> isSubSet)
-        |> Seq.length
-
-    let result = sectionAssignments |> calculate
+    let result = sectionAssignments |> calculate isSubSet
 
 module Part2 =
 
@@ -33,10 +33,5 @@ module Part2 =
         if Set.intersect (fst assignments) (snd assignments) <> Set.empty then Some ()
         else None
 
-    let calculate (lines:string[]) =
-        lines
-        |> Seq.choose (createSets >> intersect)
-        |> Seq.length
-
-    let result = sectionAssignments |> calculate
+    let result = sectionAssignments |> calculate intersect
 
