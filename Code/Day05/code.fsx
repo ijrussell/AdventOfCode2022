@@ -1,3 +1,4 @@
+open System
 open System.IO
 open System.Collections.Generic
 
@@ -23,7 +24,7 @@ type StackArray(size:int, model:MoveModel) =
     let peek () = 
         data
         |> Array.map (fun s -> s.Peek())
-        //|> String
+        |> String
 
     member _.Push(destination:int, value:char) = push destination value
     member _.Move(count:int, source:int, destination:int) = move count source destination
@@ -74,9 +75,8 @@ let calculate (model:MoveModel) (lines:string list) =
 
 module Part1 =
 
-    let result = data |> calculate CrateMover9000 |> System.String
+    let result = data |> calculate CrateMover9000
 
 module Part2 =
 
-    let result = data |> calculate CrateMover9001 |> System.String
-
+    let result = data |> calculate CrateMover9001
