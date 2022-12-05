@@ -1,15 +1,24 @@
 open System.IO
 open System.Collections.Generic
 
-type StackArray(size:int) =
+type MoveModel = CrateMover9000 | CrateMover9001
+
+type StackArray(size:int, model:MoveModel) =
     let data = Array.init size (fun _ -> Stack<char>())
 
     let push destination value = data[destination-1].Push(value)
     
     let move count source destination =
-        for _ in 1..count do
-            let item = data[source-1].Pop()
-            data[destination-1].Push(item)
+        match model with
+        | CrateMover9000 ->
+            for _ in 1..count do
+                let item = data[source-1].Pop()
+                data[destination-1].Push(item)
+        | CrateMover9001 ->
+            [ for _ in 1..count do data[source-1].Pop() ]    
+            |> List.rev
+            |> List.iter (fun item ->
+                data[destination-1].Push(item))
     
     let peek () = 
         data
@@ -42,10 +51,10 @@ let decodeMoveToRow (input:string) =
     input.Split(' ')
     |> fun ary -> int ary[1], int ary[3], int ary[5]
 
-let calculate (lines:string list) =
+let calculate (model:MoveModel) (lines:string list) =
     let (initialState, moves) =
         let index =
-            data
+            lines
             |> List.findIndex (fun x -> x = "")
         let (state, move) = data |> List.splitAt index
         state |> List.rev, move |> List.tail
@@ -53,7 +62,7 @@ let calculate (lines:string list) =
         initialState
         |> List.head
         |> getNumberOfStacks 
-    let stackArray = StackArray(count)
+    let stackArray = StackArray(count, model)
     initialState
     |> List.tail
     |> List.map processStateRow
@@ -63,6 +72,11 @@ let calculate (lines:string list) =
     |> List.iter (fun (c, s, d) -> stackArray.Move(c, s, d))
     stackArray.Peek()
 
-let result = data |> calculate |> System.String
+module Part1 =
 
+    let result = data |> calculate CrateMover9000 |> System.String
+
+module Part2 =
+
+    let result = data |> calculate CrateMover9001 |> System.String
 
