@@ -1,6 +1,7 @@
 open System
 open System.IO
 open System.Collections.Generic
+open System.Text.RegularExpressions
 
 type MoveModel = CrateMover9000 | CrateMover9001
 
@@ -48,9 +49,11 @@ let getNumberOfStacks (line:string) =
     |> Seq.map (fun c -> int c - int '0')
     |> Seq.max
 
-let decodeMoveToRow (input:string) =
-    input.Split(' ')
-    |> fun ary -> int ary[1], int ary[3], int ary[5]
+let decodeMoveToRow (move:string) =
+    let pattern = "move (?<count>\d+) from (?<source>\d+) to (?<destination>\d+)"
+    let matched = Regex.Match(move, pattern)
+    let getValue (group:string) = int matched.Groups.[group].Value
+    getValue "count", getValue "source", getValue "destination"
 
 let splitFile (lines:string list) =
     let index =
