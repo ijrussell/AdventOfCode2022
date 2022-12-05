@@ -56,11 +56,10 @@ let decodeMoveToRow (move:string) =
     getValue "count", getValue "source", getValue "destination"
 
 let splitFile (lines:string list) =
-    let index =
-        lines
-        |> List.findIndex (fun x -> x = "")
-    let (state, move) = data |> List.splitAt index
-    state |> List.rev, move |> List.tail
+    lines
+    |> List.findIndex (fun x -> x = "")
+    |> List.splitAt <| lines // Bad Ian using the backward pipe operator
+    |> fun (state, move) -> state |> List.rev, move |> List.tail
 
 let calculate (model:MoveModel) (lines:string list) =
     let (initialState, moves) = lines |> splitFile
