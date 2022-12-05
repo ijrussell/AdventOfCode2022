@@ -52,18 +52,20 @@ let decodeMoveToRow (input:string) =
     input.Split(' ')
     |> fun ary -> int ary[1], int ary[3], int ary[5]
 
+let splitFile (lines:string list) =
+    let index =
+        lines
+        |> List.findIndex (fun x -> x = "")
+    let (state, move) = data |> List.splitAt index
+    state |> List.rev, move |> List.tail
+
 let calculate (model:MoveModel) (lines:string list) =
-    let (initialState, moves) =
-        let index =
-            lines
-            |> List.findIndex (fun x -> x = "")
-        let (state, move) = data |> List.splitAt index
-        state |> List.rev, move |> List.tail
-    let count = 
+    let (initialState, moves) = lines |> splitFile
+    let stackArray = 
         initialState
         |> List.head
         |> getNumberOfStacks 
-    let stackArray = StackArray(count, model)
+        |> fun count -> StackArray(count, model)
     initialState
     |> List.tail
     |> List.map processStateRow
