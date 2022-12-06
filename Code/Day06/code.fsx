@@ -5,7 +5,7 @@ let data =
     |> File.ReadAllLines
     |> Seq.toList
 
-let findIndex (windowSize:int) (input:char[]) =
+let findIndex (windowSize:int) (input:string) =
     let rec loop index acc rem =
         match acc, rem with
         | [], [] -> failwith "Unable to find a solution"
@@ -14,9 +14,9 @@ let findIndex (windowSize:int) (input:char[]) =
             let result = if window |> Set.ofList |> Set.count = windowSize then window else []
             loop (index+1) result items.Tail
         | _, _ -> index, acc // Solution found
-    loop (windowSize-1) [] (input |> Array.toList)
+    loop (windowSize-1) [] (input |> Seq.toList)
 
-// let findIndex (windowSize:int) (input:char[]) =
+// let findIndex (windowSize:int) (input:string) =
 //     input
 //     |> Seq.windowed windowSize 
 //     |> Seq.findIndex (fun s -> s |> Set.ofSeq |> Set.count = windowSize)
@@ -26,11 +26,11 @@ module Part1 =
 
     let results =
         data
-        |> List.map (fun s -> findIndex 4 (s.ToCharArray()))
+        |> List.map (fun s -> findIndex 4 s)
 
 module Part2 =
 
     let results =
         data
-        |> List.map (fun s -> findIndex 14 (s.ToCharArray()))
+        |> List.map (fun s -> findIndex 14 s)
 
