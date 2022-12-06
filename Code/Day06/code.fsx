@@ -10,11 +10,11 @@ let findIndex (windowSize:int) (input:char list) =
         match acc, rem with
         | [], [] -> index, acc
         | [], items -> 
-            let test = items |> Seq.take windowSize
-            let res =
-                if test |> Set.ofSeq |> Set.count = windowSize then test |> Seq.toList
+            let window = items |> List.take windowSize
+            let result =
+                if window |> Set.ofSeq |> Set.count = windowSize then window
                 else []
-            loop (index+1) (res@[]) items.Tail
+            loop (index+1) (result@[]) items.Tail
         | _, _ -> index, acc
     loop (windowSize-1) [] input
 
