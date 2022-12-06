@@ -8,14 +8,12 @@ let data =
 let findIndex (windowSize:int) (input:char list) =
     let rec loop index acc rem =
         match acc, rem with
-        | [], [] -> index, acc
+        | [], [] -> failwith "Unable to find a solution"
         | [], items -> 
             let window = items |> List.take windowSize
-            let result =
-                if window |> Set.ofSeq |> Set.count = windowSize then window
-                else []
+            let result = if window |> Set.ofList |> Set.count = windowSize then window else []
             loop (index+1) (result@[]) items.Tail
-        | _, _ -> index, acc
+        | _, _ -> index, acc // Solution found
     loop (windowSize-1) [] input
 
 module Part1 =
