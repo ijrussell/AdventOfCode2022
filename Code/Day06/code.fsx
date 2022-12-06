@@ -16,6 +16,12 @@ let findIndex (windowSize:int) (input:char list) =
         | _, _ -> index, acc // Solution found
     loop (windowSize-1) [] input
 
+// let findIndex (windowSize:int) (input:char list) =
+//     input
+//     |> List.windowed windowSize 
+//     |> List.findIndex (fun s -> s |> Set.ofList |> Set.count = windowSize)
+//     |> (+) windowSize
+
 module Part1 =
 
     let results =
