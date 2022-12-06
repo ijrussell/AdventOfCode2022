@@ -16,17 +16,17 @@ let findIndex (windowSize:int) (input:char list) =
                 else []
             loop (index+1) (res@[]) items.Tail
         | _, _ -> index, acc
-    loop 0 [] input
+    loop (windowSize-1) [] input
 
 module Part1 =
 
     let results =
         data
-        |> List.map (fun s -> findIndex 4 (s.ToCharArray() |> Array.toList) |> fun (i,items) -> i+3, items)
+        |> List.map (fun s -> findIndex 4 (s.ToCharArray() |> Array.toList) |> fun (i,items) -> i, items)
 
 module Part2 =
 
     let results =
         data
-        |> List.map (fun s -> findIndex 14 (s.ToCharArray() |> Array.toList) |> fun (i,items) -> i+13, items)
+        |> List.map (fun s -> findIndex 14 (s.ToCharArray() |> Array.toList) |> fun (i,items) -> i, items)
 
