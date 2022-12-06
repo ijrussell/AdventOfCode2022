@@ -24,13 +24,9 @@ let findIndex (windowSize:int) (input:string) =
 
 module Part1 =
 
-    let results =
-        data
-        |> List.map (fun s -> findIndex 4 s)
+    let result = data |> List.map (findIndex 4)
 
 module Part2 =
 
-    let results =
-        data
-        |> List.map (fun s -> findIndex 14 s)
+    let result = data |> List.map (findIndex 14)
 
