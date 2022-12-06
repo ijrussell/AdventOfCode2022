@@ -5,20 +5,28 @@ let data =
     |> File.ReadAllLines
     |> Seq.toList
 
-let findIndex (input:char list) =
+let findIndex (windowSize:int) (input:char list) =
     let rec loop index acc rem =
         match acc, rem with
         | [], [] -> index, acc
         | [], items -> 
-            let test = items |> Seq.take 4
+            let test = items |> Seq.take windowSize
             let res =
-                if test |> Set.ofSeq |> Set.count = 4 then test |> Seq.toList
+                if test |> Set.ofSeq |> Set.count = windowSize then test |> Seq.toList
                 else []
             loop (index+1) (res@[]) items.Tail
         | _, _ -> index, acc
     loop 0 [] input
 
-let results =
-    data
-    |> List.map (fun s -> findIndex (s.ToCharArray() |> Array.toList) |> fun (i,items) -> i+3, items)
+module Part1 =
+
+    let results =
+        data
+        |> List.map (fun s -> findIndex 4 (s.ToCharArray() |> Array.toList) |> fun (i,items) -> i+3, items)
+
+module Part2 =
+
+    let results =
+        data
+        |> List.map (fun s -> findIndex 14 (s.ToCharArray() |> Array.toList) |> fun (i,items) -> i+13, items)
 
