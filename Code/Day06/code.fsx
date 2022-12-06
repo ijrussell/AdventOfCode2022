@@ -22,11 +22,11 @@ module Part1 =
 
     let results =
         data
-        |> List.map (fun s -> findIndex 4 (s.ToCharArray() |> Array.toList) |> fun (i,items) -> i, items)
+        |> List.map (fun s -> findIndex 4 (s.ToCharArray() |> Array.toList))
 
 module Part2 =
 
     let results =
         data
-        |> List.map (fun s -> findIndex 14 (s.ToCharArray() |> Array.toList) |> fun (i,items) -> i, items)
+        |> List.map (fun s -> findIndex 14 (s.ToCharArray() |> Array.toList))
 
