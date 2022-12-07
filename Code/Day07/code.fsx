@@ -18,7 +18,7 @@ type Action =
     | ListContents
 
 let data = 
-    Path.Combine(__SOURCE_DIRECTORY__, "sample-data.txt")
+    Path.Combine(__SOURCE_DIRECTORY__, "data.txt")
     |> File.ReadAllLines
 
 let (|ParseRegex|_|) regex str =
@@ -113,11 +113,31 @@ let aggregateData (input:FileSys list) =
         let dirFiles = files |> List.filter (fun (_,x,_) -> x |> List.contains dir)
         (dir, dirFiles |> List.sumBy (fun (_,_,s) -> s))
     )
-    |> List.filter (fun (_,s) -> s < 100_000)
-    |> List.sumBy (fun (_,s) -> s)
 
-let result = 
-    data 
+let processData (input:string[]) =
+    input
     |> processInputFile
     |> processActions
     |> aggregateData
+
+module Part1 =
+
+    let result = 
+        data 
+        |> processData
+        |> List.filter (fun (_,s) -> s < 100_000)
+        |> List.sumBy (fun (_,s) -> s)
+
+    // let assertPart1Sample = result = 95437
+
+module Part2 =
+
+    let result = 
+        data 
+        |> processData
+        |> List.sortByDescending (fun (_,s) -> s)
+        |> fun x -> x |> List.head, x |> List.tail |> List.sortBy (fun (_,s) -> s) 
+        |> fun ((_,v),t) -> t |> List.find (fun (_,s) -> 70_000_000 - v + s >= 30_000_000)
+        |> fun (_,v) -> v
+
+    // let assertPart2Sample = result = 24933642
