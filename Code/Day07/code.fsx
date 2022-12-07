@@ -57,29 +57,26 @@ let matchInput (input:string) =
     | _ -> failwith $"Unknown action: {input}"
 
 let processInputFile (input:string[]) =
-    let rec loop acc (rem:string list) =
-        match rem with
-        | [] -> acc |> List.rev
-        | head::tail ->
-            let action = matchInput head
-            loop (action::acc) tail
-    loop [] (input |> Array.toList)
+    input
+    |> Array.toList
+    |> List.fold (fun acc item -> (matchInput item)::acc) []
+    |> List.rev
 
 let processActions (input:Action list) =
-    let rec loop (acc:FileSys list) (curr:string list) (rem:Action list) =
-        match rem with
-        | [] -> acc |> List.rev
-        | head::tail ->
-            let fs, current =
-                match head with
-                | ChangeDirectory Root -> Folder (Name = ["/"], Current = ["/"]), ["/"]
-                | CreateFolder name -> Folder (Name = name::curr, Current = curr), curr
-                | CreateFile (name, size) -> File (Name = name::curr, Size = size), curr
-                | ChangeDirectory (Named name) -> Folder (Name = name::curr, Current = name::curr), name::curr
-                | ChangeDirectory Parent -> Folder (Name = curr.Tail, Current = curr.Tail), curr.Tail
-                | _ -> NotRequired, curr
-            loop (fs::acc) current tail
-    loop [] [] input
+    input
+    |> List.fold (fun acc item ->
+        let (items, curr) = acc
+        let fs, current =
+            match item with
+            | ChangeDirectory Root -> Folder (Name = ["/"], Current = ["/"]), ["/"]
+            | CreateFolder name -> Folder (Name = name::curr, Current = curr), curr
+            | CreateFile (name, size) -> File (Name = name::curr, Size = size), curr
+            | ChangeDirectory (Named name) -> Folder (Name = name::curr, Current = name::curr), name::curr
+            | ChangeDirectory Parent -> Folder (Name = curr.Tail, Current = curr.Tail), curr.Tail
+            | _ -> NotRequired, curr
+        fs::items, current) ([], [])
+    |> fun (x, _) -> x
+    |> List.rev
 
 let buildSubLists (input:string list) =
     let rec loop acc rem =
