@@ -11,22 +11,23 @@ let lenCol = sourceData |> Array2D.length1
 
 module Part1 =
 
-    let isVisible row col =
+    let calculate (source:int[,]) row col =
         [
-            let cellValue = sourceData[row, col]
+            let cellValue = source[row, col]
             for i in 0..col-1 do
-                if sourceData[row, i] >= cellValue then ("E", 1) 
+                if source[row, i] >= cellValue then ("E", 1) 
             for i in col+1..lenCol-1 do
-                if sourceData[row, i] >= cellValue then ("W", 1) 
+                if source[row, i] >= cellValue then ("W", 1) 
             for i in 0..row-1 do
-                if sourceData[i, col] >= cellValue then ("S", 1) 
+                if source[i, col] >= cellValue then ("S", 1) 
             for i in row+1..lenRow-1 do
-                if sourceData[i, col] >= cellValue then ("N", 1) 
+                if source[i, col] >= cellValue then ("N", 1) 
         ]
         |> List.groupBy (fun (d,_) -> d)
         |> List.length < 4
 
     let visibleTrees = 
+        let isVisible = calculate sourceData
         let calculatedData = Array2D.init lenRow lenCol (fun row col -> isVisible row col)
         [
             for row in 0..lenRow-1 do
@@ -37,17 +38,17 @@ module Part1 =
 
 module Part2 =
 
-    let calculateScenicScore row col =
+    let calculate (source:int[,]) row col =
         [
-            let cellValue = sourceData[row, col]
+            let cellValue = source[row, col]
             [for i in 0..col-1 do
-                if sourceData[row, i] >= cellValue then ("W", 1, sourceData[row, i]) else ("W", 0, sourceData[row, i])] |> List.rev
+                if source[row, i] >= cellValue then ("W", 1, source[row, i]) else ("W", 0, source[row, i])] |> List.rev
             [for i in col+1..lenCol-1 do
-                if sourceData[row, i] >= cellValue then ("E", 1, sourceData[row, i]) else ("E", 0, sourceData[row, i])] 
+                if source[row, i] >= cellValue then ("E", 1, source[row, i]) else ("E", 0, source[row, i])] 
             [for i in 0..row-1 do
-                if sourceData[i, col] >= cellValue then ("N", 1, sourceData[i, col]) else ("N", 0, sourceData[i, col])] |> List.rev 
+                if source[i, col] >= cellValue then ("N", 1, source[i, col]) else ("N", 0, source[i, col])] |> List.rev 
             [for i in row+1..lenRow-1 do
-                if sourceData[i, col] >= cellValue then ("S", 1, sourceData[i, col]) else ("S", 0, sourceData[i, col])]
+                if source[i, col] >= cellValue then ("S", 1, source[i, col]) else ("S", 0, source[i, col])]
         ]
         |> List.concat
         |> List.groupBy (fun (d,_,_) -> d)
@@ -65,6 +66,7 @@ module Part2 =
         |> List.reduce (*)
 
     let maxScenicScore = 
+        let calculateScenicScore = calculate sourceData
         let calculatedData = Array2D.init lenRow lenCol (fun row col -> calculateScenicScore row col)
         [
             for row in 1..lenRow-2 do
