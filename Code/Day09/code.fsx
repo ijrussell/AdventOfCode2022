@@ -52,18 +52,17 @@ let calculateHead (directions:(string * int) list) =
     ) ((0, 0), [])
     |> fun (_, items) -> items |> List.rev
 
-let calculateTail (positions:(int * int) list) =
-    positions
-    |> List.fold (fun acc item ->
-        let current, history = acc
-        let latest = makeMoveTail item current 
-        latest, latest::history
-    ) ((0,0), [])
-    |> fun (_, items) -> items |> List.rev
-
 let calculateTails (tails:string list) (positions:(int * int) list) =
     tails
-    |> List.fold (fun acc _ -> calculateTail acc) positions
+    |> List.fold (fun acc _ -> 
+        acc
+        |> List.fold (fun acc item ->
+            let current, history = acc
+            let latest = makeMoveTail item current 
+            latest, latest::history
+        ) ((0,0), [])
+        |> fun (_, items) -> items |> List.rev
+    ) positions
 
 let result (tails:string list) = 
     data 
