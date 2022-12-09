@@ -5,7 +5,7 @@ let readLine (input:string) =
     (line[0], int line[1])
 
 let data = 
-    Path.Combine(__SOURCE_DIRECTORY__, "sample-data.txt")
+    Path.Combine(__SOURCE_DIRECTORY__, "sample-data-2.txt")
     |> File.ReadAllLines
     |> Seq.toList
     |> List.map readLine
@@ -48,8 +48,6 @@ let makeMoveTail (inputH:int * int) (inputT:int * int) =
     // else
     else inputT
 
-let assertTail = makeMoveTail (1,0) (0,0) = (0,0)
-
 let processInstruction (current:int * int) (move:string * int) =
     let direction, distance = move
     [for _ in 1..distance do direction]
@@ -58,32 +56,41 @@ let processInstruction (current:int * int) (move:string * int) =
         let latest = makeMove current item
         latest, latest::history) (current, [])
     
-module Part2 =
+let calculateHead (directions:(string * int) list) =
+    directions
+    |> List.fold (fun acc item ->
+        let current, history = acc
+        let latest, latestMoves = processInstruction current item
+        latest, latestMoves@history
+    ) ((0, 0), [])
 
-    let calculateHead (directions:(string * int) list) =
-        directions
-        |> List.fold (fun acc item ->
-            let current, history = acc
-            let latest, latestMoves = processInstruction current item
-            latest, latestMoves@history
-        ) ((0, 0), [])
+let calculateTail (positions:(int * int) list) =
+    positions
+    |> List.fold (fun acc item ->
+        let current, history = acc
+        let latest = makeMoveTail item current 
+        latest, latest::history
+    ) ((0,0), [])
 
-    let calculateTail (positions:(int * int) list) =
-        positions
-        |> List.fold (fun acc item ->
-            let current, history = acc
-            let latest = makeMoveTail item current 
-            latest, latest::history
-        ) ((0,0), [])
-    
-    let result = 
-        data 
-        |> calculateHead
-        |> fun (_,positions) -> positions
-        |> List.rev
-        |> calculateTail
-        |> fun (_,x) -> x
-        |> List.rev
-        |> List.distinct
-        |> List.length
+let calculateTails (tails:string list) (positions:(int * int) list) =
+    tails
+    |> List.fold (fun acc item -> 
+        let _, calculatedPositions = calculateTail acc
+        calculatedPositions
+    ) positions
+
+let result (tails:string list) = 
+    data 
+    |> calculateHead
+    |> fun (_,positions) -> positions
+    |> List.rev
+    |> calculateTails tails
+    |> List.rev
+
+//let lengthPart1 = result ["T"] //|> List.distinct |> List.length
+
+let lengthPart2 = [1..2] |> List.map string |> result // |> List.distinct |> List.length
+
+
+
 
