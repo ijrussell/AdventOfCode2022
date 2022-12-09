@@ -1,24 +1,25 @@
 open System.IO
 
-let data = 
-    Path.Combine(__SOURCE_DIRECTORY__, "data.txt")
-    |> File.ReadAllLines
-    |> Seq.toList
-
 let readLine (input:string) =
     let line = input.Split(' ')
     (line[0], int line[1])
 
+let data = 
+    Path.Combine(__SOURCE_DIRECTORY__, "sample-data.txt")
+    |> File.ReadAllLines
+    |> Seq.toList
+    |> List.map readLine
+
 let makeMove (input:int * int) (direction:string) =
     let (row, col) = input
     match direction with
-    | "R" -> row + 1, col 
-    | "L" -> row - 1, col 
-    | "U" -> row, col + 1 
-    | "D" -> row, col - 1 
+    | "R" -> row+1, col 
+    | "L" -> row-1, col 
+    | "U" -> row, col+1 
+    | "D" -> row, col-1 
     | dir -> failwith $"Unknown direction: {dir}"
     
-let makeTMove (inputH:int * int) (inputT:int * int) (direction:string) =
+let makeMoveTail (inputH:int * int) (inputT:int * int) =
     let (hRow, hCol) = inputH
     let (tRow, tCol) = inputT
     let diffX, diffY = abs (hRow - tRow), abs (hCol - tCol) 
@@ -45,39 +46,44 @@ let makeTMove (inputH:int * int) (inputT:int * int) (direction:string) =
     elif diffX = 2 && diffY = 1 && hRow < tRow && hCol > tCol then (tRow-1, tCol+1)
     elif diffX = 2 && diffY = 1 && hRow < tRow && hCol < tCol then (tRow-1, tCol-1)
     // else
-    else makeMove inputT direction
+    else inputT
 
-let makeHMove (input:int * int) (direction:string) =
-    makeMove input direction
-    
-let processMove (hPos:int * int) (tPos:int * int) (move:string * int) =
+let assertTail = makeMoveTail (1,0) (0,0) = (0,0)
+
+let processInstruction (current:int * int) (move:string * int) =
     let direction, distance = move
-    let steps = [for _ in 1..distance do direction]
-    let rec loop hacc tacc acc rem =
-        match rem with
-        | [] -> hacc, tacc, acc
-        | head::tail -> 
-            let hMove = makeHMove hacc head
-            let tMove = makeTMove hMove tacc head
-            loop hMove tMove ((hMove,tMove)::acc) tail 
-    loop hPos tPos [] steps
-    
-let calculate (input:string list) =
-    input
+    [for _ in 1..distance do direction]
     |> List.fold (fun acc item ->
-        let (hrow, hcol), (trow, tcol), tMoves = acc
-        let move = readLine item
-        let (hPos, tPos, latestMoves) = processMove (hrow, hcol) (trow, tcol) move
-        (hPos, tPos, latestMoves::tMoves)
-    ) ((0, 0), (0, 0), [])
+        let current, history = acc
+        let latest = makeMove current item
+        latest, latest::history) (current, [])
+    
+module Part2 =
 
-let result = 
-    data 
-    |> calculate
-    |> fun (_, _, moves) -> 
-        moves
-        |> List.concat
-        |> List.map (fun (_,t) -> t)
+    let calculateHead (directions:(string * int) list) =
+        directions
+        |> List.fold (fun acc item ->
+            let current, history = acc
+            let latest, latestMoves = processInstruction current item
+            latest, latestMoves@history
+        ) ((0, 0), [])
+
+    let calculateTail (positions:(int * int) list) =
+        positions
+        |> List.fold (fun acc item ->
+            let current, history = acc
+            let latest = makeMoveTail item current 
+            latest, latest::history
+        ) ((0,0), [])
+    
+    let result = 
+        data 
+        |> calculateHead
+        |> fun (_,positions) -> positions
+        |> List.rev
+        |> calculateTail
+        |> fun (_,x) -> x
+        |> List.rev
         |> List.distinct
         |> List.length
 
