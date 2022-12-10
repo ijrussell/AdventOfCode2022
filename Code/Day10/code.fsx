@@ -9,8 +9,7 @@ let readLine (input:string) =
 let data = 
     Path.Combine(__SOURCE_DIRECTORY__, "data.txt")
     |> File.ReadAllLines
-    |> Seq.map readLine
-    |> Seq.concat    
+    |> Seq.collect readLine
     |> Seq.toList
 
 let calculateCummulativeValues (input:int list) =
