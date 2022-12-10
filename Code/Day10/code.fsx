@@ -2,9 +2,7 @@ open System.IO
 
 let readLine (input:string) =
     match input.Substring(0, 4) with
-    | "addx" -> 
-        let n = input.Substring(4) |> int
-        [0; n]
+    | "addx" -> [0; input.Substring(4) |> int]
     | "noop" -> [0]
     | _ -> failwith $"Unknown operation: {input}"
 
