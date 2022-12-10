@@ -4,8 +4,8 @@ let readLine (input:string) =
     match input.Substring(0, 4) with
     | "addx" -> 
         let n = input.Substring(4) |> int
-        0::n::[]
-    | "noop" -> 0::[]
+        [0; n]
+    | "noop" -> [0]
     | _ -> failwith $"Unknown operation: {input}"
 
 let data = 
