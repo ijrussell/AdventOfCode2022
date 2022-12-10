@@ -15,19 +15,33 @@ let data =
     |> Seq.concat    
     |> Seq.toList
 
-let processInput (input:int list) =
+let calculateCummulativeValues (input:int list) =
     input 
     |> List.scan (fun acc item -> acc + item) 1
     |> List.toArray
 
-let inspectionPoints =
-    20 
-    |> Seq.unfold (fun state -> if state > 220 then None else Some (state, state + 40))
-    |> Seq.toList
+module Part1 =
 
-let calcualteSignalStrength (input:int array) = 
-    inspectionPoints 
-    |> List.map (fun index -> (index, input[index-1]))
-    |> List.sumBy (fun (i, v) -> i * v)
+    let inspectionPoints initialValue =
+        initialValue 
+        |> Seq.unfold (fun state -> if state >= 240 then None else Some (state, state + 40))
+        |> Seq.toList
     
-let result = data |> processInput |> calcualteSignalStrength
+    let calcualteSignalStrength (input:int array) = 
+        inspectionPoints 20
+        |> List.map (fun index -> (index, input[index-1]))
+        |> List.sumBy (fun (i, v) -> i * v)
+        
+    let result = data |> calculateCummulativeValues |> calcualteSignalStrength
+
+module Part2 =
+
+    let showSprites (input:int array) =
+        input
+        |> Array.mapi (fun i v -> if abs (v - (i % 40)) < 2 then '#' else '.')
+        |> Array.iteri (fun i c ->
+            printf "%c" c
+            if i % 40 = 39 then printfn ""
+        )    
+
+    let result = data |> calculateCummulativeValues |> showSprites
