@@ -2,6 +2,7 @@ open System.IO
 open System.Text.RegularExpressions
 
 type Monkey = { 
+    Id: int
     Items: int64 list
     Operation: int64 -> int64
     Test: int64 -> int
@@ -61,7 +62,13 @@ let createMonkey relief (input: string[]) =
         | Match ".* divisible by ([0-9]*)" [ s ] -> int64 s
         | _ -> failwith $"Unknown test divisor: {input[3]}"
 
+    let monkeyId =
+        match input[0] with
+        | Match "Monkey ([0-9]*):" [ s ] -> int s
+        | _ -> failwith $"Unknown monkey id: {input[0]}"
+
     { 
+        Id = monkeyId
         Items = items
         Operation = operation
         Test = test
@@ -72,9 +79,8 @@ let createMonkey relief (input: string[]) =
 let calculate hasRelief maxRounds (data:string[][]) =
     let monkeys =
         data 
-        |> Array.map (createMonkey hasRelief) 
-        |> Seq.indexed 
-        |> Map.ofSeq
+        |> Array.map (createMonkey hasRelief >> fun m -> (m.Id, m)) 
+        |> Map.ofArray
 
     let doRound monkeys =
         monkeys
